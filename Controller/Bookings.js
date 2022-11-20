@@ -22,4 +22,21 @@ router.get("api/bookings", (req, res) => {
     });
 })
 
+router.get("api/bookings/book", (req, res) => {
+  var id = req.data.time;
+    Booking.findOne({_id: id})
+    .exec(function (err, booking) {
+      if(booking) {
+        Booking.findOneAndDelete({_id: id}, function(err, booking2) {
+          if (booking2) {
+              return res.status(200);
+          }
+        })
+      }
+      else {
+        return res.status(404);
+      }
+    })
+})
+
 module.exports = router

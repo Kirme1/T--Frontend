@@ -22,6 +22,12 @@ client.on("connect", e => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
+                    } else if (message.request === 'book') {
+                        book(message.url, message.data).then(data => {
+                            let response = { "id": message.id, "response": "response", "data": data }
+                            return client.publish(topic, JSON.stringify(response), {qos:1})
+                        })
+
                     }
                     console.log(option)
                 } catch (e) {
@@ -33,6 +39,15 @@ client.on("connect", e => {
     })
 })
 
+async function book(url, data) {
+    let res = {}
+    await Api.get(url, data).then(response => {
+        res = response.status
+    }).catch(e => {
+        res = { "error": e.response.status + " " + e.response.statusText}
+    })
+    return res
+}
 async function getRequest(url, Autho) {
     let data = {}
     if(Autho != undefined){
