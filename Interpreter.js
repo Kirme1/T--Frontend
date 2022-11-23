@@ -2,13 +2,14 @@ const axios = require("axios")
 const mqtt = require("mqtt")
 const client = mqtt.connect("mqtt://localhost:1883/")
 const Api = axios.create({
-    baseURL: 'http://localhost:8000/api'
+    baseURL: process.env.VUE_APP_API_ENDPOINT || 'http://localhost:8000/api'
 })
 
 client.on("connect", e => {
     console.log("connected")
     client.subscribe("/dentistimo/#", {qos:1},e => {
         client.on("message", (topic, m, option) => {
+            console.log('aaoo got something')
             if (m.length !== 0){
                 try {
                     let message = JSON.parse(m.toString())
@@ -23,6 +24,7 @@ client.on("connect", e => {
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
                     } else if (message.request === 'book') {
+                        console.log('here')
                         book(message.url, message.data).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
@@ -40,12 +42,15 @@ client.on("connect", e => {
 })
 
 async function book(url, data) {
+    console.log(data)
     let res = {}
-    await Api.get(url, data).then(response => {
+    await Api.post(url, { data: data }).then(response => {
+        console.log(response.data)
         res = response.status
     }).catch(e => {
-        res = { "error": e.response.status + " " + e.response.statusText}
+        res = { "error": e}
     })
+    console.log(res)
     return res
 }
 async function getRequest(url, Autho) {

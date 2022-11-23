@@ -3,10 +3,11 @@ const Schema = mongoose.Schema;
 
 var bookingSchema = new Schema(
     {
-        day: { type: String, required: true},
-        time: { type: String, required: true },
-        description: { type: String },
-        clinic: { type: Schema.Types.String, ref: 'clinics', required: true }
+        userId: { type: Number, required: true},
+        requestId: { type: Number, required: true },
+        dentistId: { type: Number, required: true },
+        issuance: { type: Number, required: true},
+        date: { type: Date, required: true}
     }
 );
 
