@@ -10,7 +10,7 @@ var timeSlot = require('./Controller/TimeSlots')
 
 // Variables
 var mongoURI = 'mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority';
-var port = 3000;
+var port = 8000;
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, function(err) {
@@ -33,14 +33,17 @@ app.use(morgan('dev'));
 app.options('*', cors());
 app.use(cors());
 
-
+// Import routes
+app.get('/api', function(req, res) {
+    res.json({'message': 'Welcome to your DIT342 backend ExpressJS project!'});
+});
 // use Controllers
 app.use(booking);
 app.use(timeSlot);
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {
-    res.status(404).json({ 'message': 'Not Found' });
+    res.status(405).json({ 'message': 'Not Found' });
 });
 
 // Configuration for serving frontend in production mode
