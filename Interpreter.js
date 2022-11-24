@@ -12,6 +12,7 @@ client.on("connect", e => {
             console.log('aaoo got something')
             if (m.length !== 0){
                 try {
+                    console.log(m.toString())
                     let message = JSON.parse(m.toString())
                     if (message.request === 'post') {
                         postRequest(message.url, message.data, message.data.Authorization).then(data => {
@@ -25,6 +26,7 @@ client.on("connect", e => {
                         })
                     } else if (message.request === 'book') {
                         console.log('here')
+                        console.log(message.data)
                         book(message.url, message.data).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
@@ -44,7 +46,7 @@ client.on("connect", e => {
 async function book(url, data) {
     console.log(data)
     let res = {}
-    await Api.post(url, { data: data }).then(response => {
+    await Api.post(url, data).then(response => {
         console.log(response.data)
         res = response.status
     }).catch(e => {

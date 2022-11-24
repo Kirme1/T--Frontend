@@ -3,6 +3,7 @@ const router = express.Router();
 const Booking = require('../Model/Booking')
 
 router.post("/api/bookings", function (req, res) {
+  console.log(req.body)
   let booking = new Booking(req.body);
   booking.save(function (err) {
     if (err) {
