@@ -31,6 +31,12 @@ client.on("connect", e => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
+                    } else if (message.request === 'deleteAll') {
+                        console.log('here')
+                        deleteAll(message.url).then(data => {
+                            let response = { "id": message.id, "response": "response", "data": data }
+                            return client.publish(topic, JSON.stringify(response), {qos:1})
+                        })
 
                     }
                     console.log(option)
@@ -43,6 +49,18 @@ client.on("connect", e => {
     })
 })
 
+async function deleteAll(url) {
+    console.log('here2')
+    let res = {}
+    await Api.delete(url).then(response => {
+        console.log({ 'the response': response.data })
+        res = response.status
+    }).catch(e => {
+        res = { "error": e}
+    })
+    console.log(res)
+    return res
+}
 async function book(url, data) {
     console.log(data)
     let res = {}

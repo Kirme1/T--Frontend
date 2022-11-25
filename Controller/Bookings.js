@@ -13,6 +13,14 @@ router.post("/api/bookings", function (req, res) {
   })
 })
 
+router.delete("/api/bookings", function (req, res) {
+  console.log(req.body)
+  Booking.deleteMany(function(err, bookings) {
+    if (err) { return res.status(500).send(err); }
+    return res.status(200).json({ bookings });
+});
+})
+
 router.get("api/bookings", (req, res) => {
     Booking.find(function (err, bookings) {
         if(err) {
