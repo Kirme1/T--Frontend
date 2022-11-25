@@ -9,10 +9,10 @@ var clinicSchema = new Schema(
         dentists: { type: Number, required: true },
         address: { type: String, required: true},
         city: { type: String, required: true},
-        coordinates: [{longitude: {type: Number, required: true}},
+        coordinate: [{longitude: {type: Number, required: true}},
                       {latitude: {type: Number, required: true}}
             ],
-        opening_hours: [{monday: {type: String}},
+        openinghours: [{monday: {type: String}},
                         {tuesday: {type: String}},
                         {wednesday: {type: String}},
                         {thursday: {type: String}},
