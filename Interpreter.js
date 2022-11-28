@@ -63,6 +63,7 @@ client.on("connect", e => {
 async function postC(url, data) {
     console.log('here2')
     let res = {}
+    console.log(url, data)
     await Api.post(url, data).then(response => {
         console.log({ 'the response': response.data })
         res = response

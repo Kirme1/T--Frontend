@@ -3,9 +3,10 @@ const router = express.Router();
 const Clinic = require('../Model/Clinic')
 
 
-router.post('/api/clinics', function (req, res) {
+router.post('/api/clinics', function(req, res) {
     console.log(req.body)
     let clinic = new Clinic(req.body);
+    console.log(clinic)
     clinic.save(function (err) {
       if (err) {
         return res.status(500).send(err);
@@ -14,7 +15,7 @@ router.post('/api/clinics', function (req, res) {
     })
   })
 
-router.get('/api/clinics', (req, res) => {
+router.get('/api/clinics', function (req, res)  {
     Clinic.find(function (err, clinics) {
         if(err) {
             return res.status(500).send(err);
