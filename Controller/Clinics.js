@@ -6,12 +6,12 @@ const Clinic = require('../Model/Clinic')
 router.post('/api/clinics', function(req, res) {
     console.log(req.body)
     let clinic = new Clinic(req.body);
-    console.log(clinic)
+     console.log(clinic)
     clinic.save(function (err) {
       if (err) {
         return res.status(500).send(err);
       }
-      return res.status(201).json(clinic);
+       res.status(201).json(clinic);
     })
   })
 

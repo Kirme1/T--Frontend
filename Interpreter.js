@@ -48,8 +48,14 @@ client.on("connect", e => {
                         postC(message.url, message.data).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
-                        })
-                    }
+                        }) } else if (message.request === 'postU') {
+                            console.log('here')
+                            postC(message.url, message.data).then(data => {
+                                let response = { "id": message.id, "response": "response", "data": data }
+                                return client.publish(topic, JSON.stringify(response), {qos:1})
+                            })
+                        }
+                    
                     console.log(option)
                 } catch (e) {
                     let response = { "id": topic.split('/').pop(), "response": "response", "data": "400 Bad Requests" }
@@ -59,7 +65,18 @@ client.on("connect", e => {
         })
     })
 })
-
+const getCircularReplacer = () => {
+    const seen = new WeakSet();
+    return (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) {
+          return;
+        }
+        seen.add(value);
+      }
+      return value;
+    };
+  };
 async function postC(url, data) {
     console.log('here2')
     let res = {}
@@ -71,7 +88,7 @@ async function postC(url, data) {
         res = { "error": e}
     })
     console.log(res)
-    return res
+      return res
 }
 
 async function getAllC(url) {
