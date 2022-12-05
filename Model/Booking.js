@@ -7,6 +7,8 @@ var bookingSchema = new Schema(
         requestId: { type: Number, required: true },
         dentistId: { type: Number, required: true },
         issuance: { type: Number, required: true},
+        time: { type: String, required: true},
+        clinicId: { type: Number, required: true},
         date: { type: Date, required: true}
     }
 );

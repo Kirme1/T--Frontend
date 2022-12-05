@@ -31,6 +31,14 @@ client.on("connect", e => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
+                    } else if (message.request === 'getBookings') {
+                        console.log('here')
+                        console.log(message.data)
+                        getBook(message.url).then(data => {
+                            let response = { "id": message.id, "response": "response", "data": data }
+                            console.log({'this is what youre looking for': stringify(response)})
+                            return client.publish(topic, JSON.stringify(response), {qos:1})
+                        })
                     } else if (message.request === 'deleteAll') {
                         console.log('here')
                         deleteAll(message.url).then(data => {
@@ -47,7 +55,7 @@ client.on("connect", e => {
                         console.log('here')
                         postC(message.url, message.data).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
-                            return client.publish(topic, JSON.stringify(response), {qos:1})
+                            return client.publish(topic, JSON.stringify(response, getCircularReplacer()), {qos:1})
                         })
                     }
                     console.log(option)
@@ -59,6 +67,32 @@ client.on("connect", e => {
         })
     })
 })
+
+async function getBook(url) {
+    console.log('here2')
+    let res = {}
+    await Api.get(url).then(response => {
+        console.log({'the response': response.data})
+        res = response.data
+    }).catch(e => {
+        res = {"error": e}
+    })
+    console.log(res)
+    return res
+}
+
+const getCircularReplacer = () => {
+    const seen = new WeakSet();
+    return (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) {
+          return;
+        }
+        seen.add(value);
+      }
+      return value;
+    };
+  };
 
 async function postC(url, data) {
     console.log('here2')

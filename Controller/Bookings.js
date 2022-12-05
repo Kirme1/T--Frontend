@@ -21,13 +21,12 @@ router.delete("/api/bookings", function (req, res) {
 });
 })
 
-router.get("api/bookings", (req, res) => {
+router.get("/api/bookings", (req, res) => {
     Booking.find(function (err, bookings) {
         if(err) {
             return res.status(500).send(err);
         }
-        res.json({ bookings: bookings});
-        res.status(200);
+        res.status(200).json({bookings: bookings });
     });
 })
 

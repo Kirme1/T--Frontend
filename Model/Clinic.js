@@ -11,11 +11,7 @@ var clinicSchema = new Schema(
         city: { type: String, required: true},
         coordinate: { type: Array },
         openinghours: { type: Array }
-    },
-    {
-        minimize: false,
-        versionKey: false
-      }
+    }
 );
 
 module.exports = mongoose.model('clinics', clinicSchema);
