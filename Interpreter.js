@@ -7,7 +7,7 @@ const Api = axios.create({
 
 client.on("connect", e => {
     console.log("connected")
-    client.subscribe("/dentistimo/#", {qos:1},e => {
+    client.subscribe("/dentistimo/authenticated/#", {qos:1},e => {
         client.on("message", (topic, m, option) => {
             console.log('aaoo got something')
             if (m.length !== 0){
@@ -55,6 +55,13 @@ client.on("connect", e => {
                                 return client.publish(topic, JSON.stringify(response), {qos:1})
                             })
                         }
+                    else if (message.request === 'login') {
+                        login(message.url, message.data).then(data => {
+                            let response = { "id": message.id, "respnse": "response", "data": data }
+                            return client.publish(topic, JSON.stringify(response), {qos:1})
+                        })
+
+                    }
                     
                     console.log(option)
                 } catch (e) {
@@ -164,4 +171,13 @@ async function postRequest(url, data, Autho) {
         })
         return res
     }
+}
+
+async function login(url, data) {
+    await Api.post(url, data).then(response => {
+        res = { "status": response.status + " " + response.statusText, "data": response.data }
+    }).catch(e => {
+        res = { "error": e.response.status + " " + e.response.statusText }
+    })
+    return res
 }

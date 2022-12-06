@@ -7,6 +7,7 @@ var history = require('connect-history-api-fallback');
 
 var booking = require('./Controller/Bookings')
 var clinic = require('./Controller/Clinics')
+var user = require('./Controller/Users')
 
 // Variables
 var mongoURI = 'mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority';
@@ -39,7 +40,8 @@ app.get('/api', function(req, res) {
 });
 // use Controllers
 app.use(booking);
-app.use(clinic)
+app.use(clinic);
+app.use(user);
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {

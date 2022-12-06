@@ -77,3 +77,6 @@ router.post('/api/users', function(req, res, next){
      });
     
  });
+
+ module.exports = router
+ 
