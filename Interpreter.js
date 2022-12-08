@@ -58,13 +58,21 @@ client.on("connect", e => {
                         }) } 
                         else if (message.request === 'postBookingForUser') {
                             console.log('here')
-                            postC(message.url, message.data).then(data => {
+                            postBookingForUser(message.url, message.data).then(data => {
                                 let response = { "id": message.id, "response": "response", "data": data }
                                 return client.publish(topic, JSON.stringify(response), {qos:1})
                             }) }
                         else if (message.request === 'postU') {
                             console.log('here')
                             postU(message.url, message.data).then(data => {
+                                let response = { "id": message.id, "response": "response", "data": data }
+                                console.log(response)
+                                return client.publish(topic, JSON.stringify(response), {qos:1})
+                            })
+                        }
+                        else if (message.request === 'patchU') {
+                            console.log('here')
+                            patchU(message.url, message.data).then(data => {
                                 let response = { "id": message.id, "response": "response", "data": data }
                                 console.log(response)
                                 return client.publish(topic, JSON.stringify(response), {qos:1})
@@ -226,6 +234,21 @@ async function postU(url, data) {
     console.log(res)
       return res
 }
+
+async function patchU(url, data) {
+    console.log('here2')
+    let res = {}
+    console.log(url, data)
+    await Api.patch(url, data).then(response => {
+        console.log({ 'the response': response.data })
+        res = response.data
+    }).catch(e => {
+        res = { "error": e}
+    })
+    console.log(res)
+      return res
+}
+
 async function login(url, data) {
     await Api.post(url, data).then(response => {
         res = { "status": response.status + " " + response.statusText, "data": response.data }

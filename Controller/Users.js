@@ -115,5 +115,31 @@ router.post('/api/users', function(req, res, next){
     });
   });
 
+  router.patch('/api/user/:id', function(req, res,next) {
+    var id = req.params.id;
+    User.findById(id, function(err, user) {
+        if (err) { return res.status(500).send(err); }
+        if (user == null) {
+        return res.status(404).json({"message": "User not found"});
+        }
+        user.firstName = (req.body.firstName || user.firstName);
+        user.lastName = (req.body.lastName || user.lastName);
+        user.emailAddress = (req.body.emailAddress || user.emailAddress);
+        user.password = (req.body.password || user.password)
+        user.bookings = (req.body.bookings || user.bookings)
+        user.save()
+        .then(result => {
+          console.log(result);
+        return res.status(201).json(result)
+        })
+        .catch(err => {
+         console.log(err);
+         return res.status(500).json({
+          error: err
+         });
+        })
+    });
+});
+
  module.exports = router
  
