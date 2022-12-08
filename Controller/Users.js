@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const User = require('../Model/User')
+const Booking = require('../Model/Booking')
 const jwt= require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose')
+
 
 
 router.post('/api/login', (req,res,next) =>{
@@ -55,7 +59,6 @@ router.post('/api/users', function(req, res, next){
       else {
        var user = new User({
          _id: new mongoose.Types.ObjectId,
-         SSN: req.body.SSN,
          firstName: req.body.firstName,
          lastName: req.body.lastName,
          emailAddress: req.body.emailAddress,
@@ -77,6 +80,40 @@ router.post('/api/users', function(req, res, next){
      });
     
  });
+
+ router.get('/api/users/:id/bookings', function(req, res, next){
+    User.findOne({_id: req.params.id})
+    .populate('bookings').exec(function(err, user) {
+        if(err){ return res.status(500).send(err);}
+        if(user == null){
+            return res.status(404).json({'message': ' User not found'});
+        }
+       console.log(user.bookings);
+       return res.status(200).json({bookings: user.bookings});
+    });
+  });
+  
+  router.post("/api/users/:id/bookings", function (req, res, next) {
+    User.findById(req.params.id, function (err, user) {
+      if (err) {
+        return res.status(500);
+      }
+      if (user == null) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      var booking = new Booking(req.body);
+      booking.save(function (err) {
+        if (err) {
+          return res.status(500);
+        }
+        console.log("Booking created.");
+      });
+      user.bookings.push(booking);
+      user.save();
+      console.log("Booking added to ");
+      return res.status(201).json(user);
+    });
+  });
 
  module.exports = router
  

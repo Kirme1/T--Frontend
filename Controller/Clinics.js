@@ -24,5 +24,4 @@ router.get('/api/clinics', function (req, res)  {
     });
 })
 
-
 module.exports = router

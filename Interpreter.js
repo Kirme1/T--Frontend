@@ -12,7 +12,7 @@ client.on("connect", e => {
             console.log('aaoo got something')
             if (m.length !== 0){
                 try {
-                    console.log(m.toString())
+                    //console.log(m.toString())
                     let message = JSON.parse(m.toString())
                     if (message.request === 'post') {
                         postRequest(message.url, message.data, message.data.Authorization).then(data => {
@@ -42,16 +42,31 @@ client.on("connect", e => {
                         getAllC(message.url).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
-                        })
-                    } else if (message.request === 'postC') {
+                        })}
+                        else if (message.request === 'getAllBookingsOfClinic') {
+                            console.log('here')
+                            getAllBookingsOfClinic(message.url).then(data => {
+                                let response = { "id": message.id, "response": "response", "data": data }
+                                return client.publish(topic, JSON.stringify(response), {qos:1})
+                            })
+                        }
+                    else if (message.request === 'postC') {
                         console.log('here')
                         postC(message.url, message.data).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
-                        }) } else if (message.request === 'postU') {
+                        }) } 
+                        else if (message.request === 'postBookingForUser') {
                             console.log('here')
                             postC(message.url, message.data).then(data => {
                                 let response = { "id": message.id, "response": "response", "data": data }
+                                return client.publish(topic, JSON.stringify(response), {qos:1})
+                            }) }
+                        else if (message.request === 'postU') {
+                            console.log('here')
+                            postU(message.url, message.data).then(data => {
+                                let response = { "id": message.id, "response": "response", "data": data }
+                                console.log(response)
                                 return client.publish(topic, JSON.stringify(response), {qos:1})
                             })
                         }
@@ -96,6 +111,32 @@ async function postC(url, data) {
     })
     console.log(res)
       return res
+}
+async function postBookingForUser(url, data) {
+    console.log('here2')
+    let res = {}
+    console.log(url, data)
+    await Api.post(url, data).then(response => {
+        console.log({ 'the response': response.data })
+        res = response.data
+    }).catch(e => {
+        res = { "error": e}
+    })
+    console.log(res)
+      return res
+}
+
+async function getAllBookingsOfClinic(url) {
+    console.log('here2')
+    let res = {}
+    await Api.get(url).then(response => {
+        console.log({ 'the response': response.data })
+        res = response.data
+    }).catch(e => {
+        res = { "error": e}
+    })
+    console.log(res)
+    return res
 }
 
 async function getAllC(url) {
@@ -172,7 +213,19 @@ async function postRequest(url, data, Autho) {
         return res
     }
 }
-
+async function postU(url, data) {
+    console.log('here2')
+    let res = {}
+    console.log(url, data)
+    await Api.post(url, data).then(response => {
+        console.log({ 'the response': response.data })
+        res = response.data
+    }).catch(e => {
+        res = { "error": e}
+    })
+    console.log(res)
+      return res
+}
 async function login(url, data) {
     await Api.post(url, data).then(response => {
         res = { "status": response.status + " " + response.statusText, "data": response.data }
