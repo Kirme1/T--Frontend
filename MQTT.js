@@ -8,12 +8,12 @@ function generateId(length) {
     return result;
 }
 
-function mqtt(request, url, data) {
+function mqtt(request, url, data, authenticated) {
     const ws = new WebSocket("ws://localhost:8082");
     var message = []
     ws.onopen = () => {
         let id = generateId(30)
-        ws.send(JSON.stringify({ "id": id, "request": request, "url": url, "data": data }));
+        ws.send(JSON.stringify({ "id": id, "request": request, "url": url, "data": data, "authenticated": authenticated}));
     }
     ws.onmessage = function (event) {
         message.push(JSON.parse(event.data));
