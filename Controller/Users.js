@@ -5,13 +5,21 @@ const Booking = require('../Model/Booking')
 const jwt= require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose')
+const process = require('../nodemon.json')
 
 
 
 router.post('/api/login', (req,res,next) =>{
-    User.findOne({emailAddress: req.body.emailAddress})
+  console.log('here backend')
+  console.log(process.env.JWT_KEY)
+  console.log(req.body)
+    User.findOne({emailAddress: req.body.email})
     .exec() 
     .then(user =>{
+      if(!user) {
+        console.log('here again')
+        return res.status(404).json({ message: 'User not found!'})
+      } else {
      if(user.length < 1){
         return res.status(401).json({
             message: 'Authentication failed'
@@ -42,6 +50,7 @@ router.post('/api/login', (req,res,next) =>{
         message:'Authentication failed'
     });
     })
+  }
 })
     .catch(err =>{
         console.log(err);

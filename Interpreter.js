@@ -79,8 +79,11 @@ client.on("connect", e => {
                             })
                         }
                     else if (message.request === 'login') {
+                        console.log('here-login')
                         login(message.url, message.data).then(data => {
-                            let response = { "id": message.id, "respnse": "response", "data": data }
+                            console.log(data)
+                            let response = { "id": message.id, "response": "response", "data": data }
+                            console.log(response)
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
 
@@ -250,10 +253,16 @@ async function patchU(url, data) {
 }
 
 async function login(url, data) {
+    console.log('here-l')
+    let res = {}
     await Api.post(url, data).then(response => {
-        res = { "status": response.status + " " + response.statusText, "data": response.data }
+        console.log(response.data)
+        res = response.data
+        //res = { "status": response.status + " " + response.statusText, "data": response.data }
     }).catch(e => {
-        res = { "error": e.response.status + " " + e.response.statusText }
+        console.log('caught')
+        res = { "error": e}
+        //res = { "error": e.response.status + " " + e.response.statusText }
     })
     return res
 }
