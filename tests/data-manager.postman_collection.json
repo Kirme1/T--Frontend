@@ -42,12 +42,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/users",
-					"protocol": "http",
+					"raw": "{{host}}/api/users",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"users"
@@ -98,12 +96,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/login",
-					"protocol": "http",
+					"raw": "{{host}}/api/login",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"login"
@@ -157,12 +153,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/bookings",
-					"protocol": "http",
+					"raw": "{{host}}/api/bookings",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"bookings"
@@ -214,12 +208,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/bookings",
-					"protocol": "http",
+					"raw": "{{host}}/api/bookings",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"bookings"
@@ -267,12 +259,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/bookings",
-					"protocol": "http",
+					"raw": "{{host}}/api/bookings",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"bookings"
@@ -323,12 +313,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/clinics",
-					"protocol": "http",
+					"raw": "{{host}}/api/clinics",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"clinics"
@@ -425,12 +413,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/users/{{UserOne}}",
-					"protocol": "http",
+					"raw": "{{host}}/api/users/{{UserOne}}",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"users",
