@@ -355,12 +355,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8000/api/clinics",
-					"protocol": "http",
+					"raw": "{{host}}/api/clinics",
 					"host": [
-						"localhost"
+						"{{host}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"clinics"
