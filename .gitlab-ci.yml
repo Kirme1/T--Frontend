@@ -1,13 +1,32 @@
-image: node:14-alpine #import the image of node.js from docker
+image: node:14-alpine
 
-stages:          # List of stages for jobs, and their order of execution
+# Cache modules in between jobs per-branch
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - server/node_modules/
+
+stages:
   - build
+  - test
 
-build-job:       # This job runs in the build stage, which runs first.
+build:
   stage: build
   tags:
-    - docker #defines docker as the runner for this job
+    - docker
   script:
-    - echo  "Start building"
-    - npm install #build the node code based on the package.json file
-    - echo "Build complete."
+    - npm install
+    - npm build
+
+test:
+  stage: test
+  tags:
+    - docker
+  services:
+    - name: mvertes/alpine-mongo:latest
+      alias: mongo
+  variables:
+    MONGODB_URI: "mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority"
+  script:
+    - cd server
+    - npm run ci-test
