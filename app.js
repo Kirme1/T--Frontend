@@ -11,7 +11,7 @@ var user = require('./Controller/Users')
 
 // Variables
 var mongoURI = 'mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority';
-var port = 8000;
+var port = process.env.PORT || 8000;
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, function(err) {
