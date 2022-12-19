@@ -10,5 +10,12 @@
     "mongoose": "^6.7.2",
     "morgan": "^1.10.0",
     "mqtt": "^4.3.7"
+  },
+  "scripts": {
+    "ci-test": "npm run newman-server",
+    "newman-server": "cross-env-shell PORT=3001 \"npm run dropdb && run-p --race start newman-wait\"",
+    "newman-wait": "wait-on http://localhost:3001/api && npm run newman",
+    "newman": "newman run ./tests/server.postman_collection.json --env-var host=http://localhost:3001",
+    "dropdb": "node ./tests/dropdb.js"
   }
 }
