@@ -124,9 +124,9 @@ router.post('/api/users', function(req, res, next){
     });
   });
 
-  router.patch('/api/user/:id', function(req, res,next) {
-    var id = req.params.id;
-    User.findById(id, function(err, user) {
+  router.patch('/api/users/:id', function(req, res,next) {
+    var id = req.params.emailAddress;
+    User.findOne(id, function(err, user) {
         if (err) { return res.status(500).send(err); }
         if (user == null) {
         return res.status(404).json({"message": "User not found"});
