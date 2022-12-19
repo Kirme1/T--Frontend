@@ -10,7 +10,7 @@ var clinic = require('./Controller/Clinics')
 var user = require('./Controller/Users')
 
 // Variables
-var mongoURI = 'mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority';
+var mongoURI = process.env.MONGO_URI || 'mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority';
 var port = process.env.PORT || 8000;
 
 // Connect to MongoDB
