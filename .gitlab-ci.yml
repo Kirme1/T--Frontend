@@ -28,5 +28,4 @@ test:
   variables:
     MONGODB_URI: "mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority"
   script:
-    - cd server
     - npm run ci-test
