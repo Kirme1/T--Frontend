@@ -251,7 +251,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"time\": \"10:30\"\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -259,67 +259,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/bookings",
+					"raw": "{{host}}/api/bookings/{{Booking1}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
-						"bookings"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Post a clinic",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = JSON.parse(responseBody);\r",
-							"postman.setEnvironmentVariable(\"Clinic1\", jsonData._id);\r",
-							"\r",
-							"pm.test(\"Successful POST request\", function () {\r",
-							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "loginToken",
-						"value": "{{Token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": \"1\",\r\n    \"name\": \"Dentist\",\r\n    \"owner\": \"D\",\r\n    \"dentists\": 3,\r\n    \"address\": \"Lindholmen\",\r\n    \"city\": \"Gothenburg\",\r\n    \"coordinate\": [],\r\n    \"openingHours\": []\r\n\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{host}}/api/clinics",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"api",
-						"clinics"
+						"bookings",
+						"{{Booking1}}"
 					]
 				}
 			},

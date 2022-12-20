@@ -32,8 +32,8 @@ router.get('/api/bookings', (req, res) => {
     });
 })
 
-router.delete('/api/bookings', function(req, res) {
-  var id = req.body.time;
+router.delete('/api/bookings/:id', function(req, res) {
+  var id = req.params.id
         Booking.findOneAndDelete({_id: id}, function(err, booking) {
           if (!booking) {
             return res.status(404).json({ message: "Name was not found"});
