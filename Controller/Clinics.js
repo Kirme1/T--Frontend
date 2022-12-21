@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Clinic = require('../Model/Clinic')
 
-
+// This method posts a new clinic based on the information in request body and then saves the created clinic.
 router.post('/api/clinics', function(req, res) {
     console.log(req.body)
     let clinic = new Clinic(req.body);
@@ -15,6 +15,7 @@ router.post('/api/clinics', function(req, res) {
     })
   })
 
+  // This method retrieves all the clinics that have been created.
 router.get('/api/clinics', function (req, res)  {
     Clinic.find(function (err, clinics) {
         if(err) {

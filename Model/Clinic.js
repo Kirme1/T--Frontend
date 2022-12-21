@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// Clinic schema with all its attributes are defined here:
 var clinicSchema = new Schema(
     {
         id: { type: String, required: true },
