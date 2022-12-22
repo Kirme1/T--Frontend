@@ -14,14 +14,16 @@ client.on("connect", e => {
                 try {
                     //console.log(m.toString())
                     let message = JSON.parse(m.toString())
+                    console.log(message.request)
                     if (message.request === 'post') {
                         postRequest(message.url, message.data, message.data.Authorization).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
                     } else if (message.request === 'get') {
-                        getRequest(message.url, message.data.Authorization).then(data => {
+                        getAllC(message.url, message.data.Authorization).then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
+                            console.log(response)
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
                     } else if (message.request === 'book') {
@@ -44,7 +46,8 @@ client.on("connect", e => {
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })}
                         else if (message.request === 'getAllBookingsOfClinic') {
-                            console.log('here')
+                            console.log('here-lov')
+                            console.log(message.url)
                             getAllBookingsOfClinic(message.url).then(data => {
                                 let response = { "id": message.id, "response": "response", "data": data }
                                 return client.publish(topic, JSON.stringify(response), {qos:1})
@@ -78,8 +81,25 @@ client.on("connect", e => {
                                 return client.publish(topic, JSON.stringify(response), {qos:1})
                             })
                         }
+                        else if (message.request === 'getU') {
+                            console.log('here')
+                            getU(message.url, message.data).then(data => {
+                                let response = { "id": message.id, "response": "response", "data": data }
+                                console.log(response)
+                                return client.publish(topic, JSON.stringify(response), {qos:1})
+                            })
+                        }
                     else if (message.request === 'login') {
                         console.log('here-login')
+                        login(message.url, message.data).then(data => {
+                            console.log(data)
+                            let response = { "id": message.id, "response": "response", "data": data }
+                            console.log(response)
+                            return client.publish(topic, JSON.stringify(response), {qos:1})
+                        })
+
+                    } else if (message.request === 'getBookings') {
+                        console.log('here-get-bookings')
                         login(message.url, message.data).then(data => {
                             console.log(data)
                             let response = { "id": message.id, "response": "response", "data": data }
@@ -229,6 +249,20 @@ async function postU(url, data) {
     let res = {}
     console.log(url, data)
     await Api.post(url, data).then(response => {
+        console.log({ 'the response': response.data })
+        res = response.data
+    }).catch(e => {
+        res = { "error": e}
+    })
+    console.log(res)
+      return res
+}
+
+async function getU(url, data) {
+    console.log('here2')
+    let res = {}
+    console.log(url, data)
+    await Api.get(url, data).then(response => {
         console.log({ 'the response': response.data })
         res = response.data
     }).catch(e => {

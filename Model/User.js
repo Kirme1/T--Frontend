@@ -11,8 +11,8 @@ var userSchema = new Schema({
       },
       bookings: [{
         type: Schema.Types.ObjectId,
-        ref: "Booking"
+        ref: "booking"
      }]
 });
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('user', userSchema)
