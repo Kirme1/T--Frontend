@@ -6,7 +6,6 @@
     "connect-history-api-fallback": "^2.0.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "handlebars": "^4.7.7",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.2",
     "morgan": "^1.10.0",
@@ -17,9 +16,9 @@
   "scripts": {
     "start": "node app.js",
     "ci-test": "npm run newman-server",
-    "newman-server": "cross-env-shell PORT=3001 npm run dropdb && run-p --race start newman-wait",
+    "newman-server": "cross-env-shell PORT=3001 \"npm run dropdb && run-p --race start newman-wait\"",
     "newman-wait": "wait-on http://localhost:3001/api && npm run newman",
-    "newman": "newman run tests/data-manager.postman_collection.json --env-var host=http://localhost:3001/",
+    "newman": "newman run tests/data-manager.postman_collection.json --env-var host=http://localhost:3001",
     "dropdb": "node tests/dropdb.js"
   },
   "devDependencies": {
