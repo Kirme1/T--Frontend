@@ -1,3 +1,4 @@
+// Here backend connects to the mqtt
 function generateId(length) {
     let result = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
