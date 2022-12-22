@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// Here the Booking schema with all its attributes is defined:
 var bookingSchema = new Schema(
     {
         //userId: { type: Number, required: true},

@@ -4,7 +4,9 @@ const client = mqtt.connect("mqtt://localhost:1883/")
 const Api = axios.create({
     baseURL: process.env.VUE_APP_API_ENDPOINT || 'http://localhost:8000/api'
 })
-
+// All the requests sent from the client, after being authenticated come here
+// Interpreter checks what is the type of request (like if it is a get, post, book, etc)
+// Then based on the type, the request is handeld via one the async functions below.
 client.on("connect", e => {
     console.log("connected")
     client.subscribe("/dentistimo/authenticated/#", {qos:1},e => {
@@ -118,6 +120,7 @@ client.on("connect", e => {
         })
     })
 })
+// Wer are not using this method anymore!
 const getCircularReplacer = () => {
     const seen = new WeakSet();
     return (key, value) => {
@@ -130,6 +133,7 @@ const getCircularReplacer = () => {
       return value;
     };
   };
+  // this function handles the request for posting a clinic and sends it to the relevant endpoint here in the controllers.
 async function postC(url, data) {
     console.log('here2')
     let res = {}
@@ -143,6 +147,8 @@ async function postC(url, data) {
     console.log(res)
       return res
 }
+// This method handles the request for post a new booking for a specfic user
+// It then sends the request to the related endpoint in the booking controller
 async function postBookingForUser(url, data) {
     console.log('here2')
     let res = {}
@@ -156,7 +162,7 @@ async function postBookingForUser(url, data) {
     console.log(res)
       return res
 }
-
+// This method handels the request for retrieving all the bookings.
 async function getAllBookingsOfClinic(url) {
     console.log('here2')
     let res = {}
@@ -169,7 +175,8 @@ async function getAllBookingsOfClinic(url) {
     console.log(res)
     return res
 }
-
+// This function handles the request for getting all the clinics and sends the 
+// request to the endpoint in the backend that can retrive all the clinics
 async function getAllC(url) {
     console.log('here2')
     let res = {}
@@ -182,7 +189,8 @@ async function getAllC(url) {
     console.log(res)
     return res
 }
-
+// This function sends the request to deleting endpoint in booking controller to 
+// delete all the bookings
 async function deleteAll(url) {
     console.log('here2')
     let res = {}
@@ -195,6 +203,7 @@ async function deleteAll(url) {
     console.log(res)
     return res
 }
+// This function uses the post function in the booking controller to create a booking.
 async function book(url, data) {
     console.log(data)
     let res = {}
@@ -207,6 +216,7 @@ async function book(url, data) {
     console.log(res)
     return res
 }
+
 async function getRequest(url, Autho) {
     let data = {}
     if(Autho != undefined){
@@ -244,6 +254,7 @@ async function postRequest(url, data, Autho) {
         return res
     }
 }
+// This function uses the post endpoint in the user controller to post a user.
 async function postU(url, data) {
     console.log('here2')
     let res = {}
@@ -272,6 +283,8 @@ async function getU(url, data) {
       return res
 }
 
+// This function uses the patch a user endpoint in the user controller to edit the whole 
+// or part of a user information.
 async function patchU(url, data) {
     console.log('here2')
     let res = {}
@@ -285,7 +298,7 @@ async function patchU(url, data) {
     console.log(res)
       return res
 }
-
+// This function uses the post endpoint for logging in a user in the user controller
 async function login(url, data) {
     console.log('here-l')
     let res = {}
