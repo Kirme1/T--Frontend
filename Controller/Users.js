@@ -205,6 +205,7 @@ router.post('/api/users', function(req, res, next){
             if (error) {
                 console.log(error);
             }
+            console.log("The email has been sent!")
         });
     });
 /*
@@ -236,10 +237,11 @@ router.post('/api/users', function(req, res, next){
   });
 
   router.patch('/api/users/:id', function(req, res,next) { 
-    var id = req.params.emailAddress;
-    User.findById(id, function(err, user) {
-        if (err) { return res.status(500).send(err); }
-        if (user == null) {
+    User.findOne({ _id: req.params.id }).exec(function (err, user) {
+        if (err) {
+          console.log("It's me")
+           return res.status(500).send(err); }
+        if (user === null) {
         return res.status(404).json({"message": "User not found"});
         }
         var hashCode = user.password

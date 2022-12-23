@@ -28,7 +28,7 @@ client.on("connect", e => {
                         })
                     } else if (message.request === 'get') {
                        // getAllC(message.url, message.data.Authorization).then(data => {
-                        var getPromise = getCommand.execute(message.url, message.data.Authorization)
+                        var getPromise = getCommand.execute(message.url)
                         getPromise.then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             console.log(response)
@@ -248,10 +248,10 @@ async function book(url, data) {
     .errorHandler(isErrorHandler)
     .build();
     */
-    var getCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
+    var getCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a get command with default settings
     .circuitBreakerErrorThresholdPercentage(10)
     .timeout(700)
-    .run(getRequest) //The command calls the book function when executed, creating a promise
+    .run(getAllC) //The command calls the getRequest function when executed, creating a promise
     .circuitBreakerRequestVolumeThreshold(6)
     .circuitBreakerSleepWindowInMilliseconds(700)
     .statisticalWindowLength(10000)
@@ -260,24 +260,18 @@ async function book(url, data) {
     .build();
 
 
-async function getRequest(url, Autho) {
-    let data = {}
-    if(Autho != undefined){
-        await Api.get(url, {headers: {Authorization: 'Bearer ' + Autho}}).then(response => {
-            data = response.data
-        }).catch(e => {
-            data = { "error": e.response.status + " " + e.response.statusText }
-        })
-        return data
-    } else {
+    async function getRequest(url) {
+        console.log('here2')
+        let res = {}
         await Api.get(url).then(response => {
-            data = response.data
+            console.log({ 'the response': response.data })
+            res = response.data
         }).catch(e => {
-            data = { "error": e.response.status + " " + e.response.statusText }
+            res = { "error": e}
         })
-        return data
+        console.log(res)
+        return res
     }
-}
 
 /*var postCommand = CommandsFactory.getOrCreate("Service on port :" + service.port + ":" + port) //Same as above, but for the postRequest function
     .circuitBreakerErrorThresholdPercentage(service.errorThreshold)
