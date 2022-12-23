@@ -14,7 +14,7 @@
 					"script": {
 						"exec": [
 							"var jsonData = JSON.parse(responseBody);\r",
-							"pm.environment.set(\"UserOne\", jsonData.emailAddress);\r",
+							"pm.environment.set(\"UserOne\", jsonData._id);\r",
 							"\r",
 							"pm.test(\"Successful POST request\", function () {\r",
 							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
@@ -124,7 +124,7 @@
 							"\r",
 							"pm.test(\"response should have valid JSON data\", function () {\r",
 							"pm.expect(jsonData.date).to.eql('2022-12-12T00:00:00.000Z');\r",
-							"pm.expect(jsonData.issuance).to.eql(123);\r",
+							"pm.expect(jsonData.issuance).to.eql('123');\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -145,7 +145,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\": 11,\r\n    \"requestId\": 12,\r\n    \"dentistId\": 1,\r\n    \"issuance\": 123,\r\n    \"date\": \"2022-12-12\"\r\n\r\n\r\n}",
+					"raw": "{\r\n    \"requestId\": \"12\",\r\n    \"dentistId\": 1,\r\n    \"issuance\": \"123\",\r\n    \"date\": \"2022-12-12\",\r\n    \"time\": \"10:30\",\r\n    \"clinicName\": \"Your Dentist\"\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
