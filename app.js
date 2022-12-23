@@ -6,11 +6,12 @@ var cors = require('cors');
 var history = require('connect-history-api-fallback');
 
 var booking = require('./Controller/Bookings')
-var timeSlot = require('./Controller/TimeSlots')
+var clinic = require('./Controller/Clinics')
+var user = require('./Controller/Users')
 
 // Variables
-var mongoURI = 'mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority';
-var port = 8000;
+var mongoURI = process.env.MONGO_URI || 'mongodb+srv://admin:admin@atlascluster.scswlpb.mongodb.net/?retryWrites=true&w=majority';
+var port = process.env.PORT || 8000;
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }, function(err) {
@@ -39,7 +40,8 @@ app.get('/api', function(req, res) {
 });
 // use Controllers
 app.use(booking);
-app.use(timeSlot);
+app.use(clinic);
+app.use(user);
 
 // Catch all non-error handler for api (i.e., 404 Not Found)
 app.use('/api/*', function (req, res) {

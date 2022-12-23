@@ -1,14 +1,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// Here the Booking schema with all its attributes is defined:
 var bookingSchema = new Schema(
     {
-        userId: { type: Number, required: true},
-        requestId: { type: Number, required: true },
+        //userId: { type: Number, required: true},
+        requestId: { type: String, required: true },
         dentistId: { type: Number, required: true },
-        issuance: { type: Number, required: true},
-        date: { type: Date, required: true}
+        issuance: { type: String, required: true},
+        date: { type: Date, required: true},
+        time: {type: String, required: true},
+        clinicName: { type: String, required: true}
     }
 );
 
-module.exports = mongoose.model('bookings', bookingSchema);
+module.exports = mongoose.model('booking', bookingSchema);

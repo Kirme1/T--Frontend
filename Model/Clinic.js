@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// Clinic schema with all its attributes are defined here:
 var clinicSchema = new Schema(
     {
         id: { type: String, required: true },
@@ -9,16 +10,13 @@ var clinicSchema = new Schema(
         dentists: { type: Number, required: true },
         address: { type: String, required: true},
         city: { type: String, required: true},
-        coordinates: [{longitude: {type: Number, required: true}},
-                      {latitude: {type: Number, required: true}}
-            ],
-        opening_hours: [{monday: {type: String}},
-                        {tuesday: {type: String}},
-                        {wednesday: {type: String}},
-                        {thursday: {type: String}},
-                        {friday: {type: String}} 
-            ]
-    }
+        coordinate: { type: Array },
+        openinghours: { type: Array }
+    },
+    {
+        minimize: false,
+        versionKey: false
+      }
 );
 
 module.exports = mongoose.model('clinics', clinicSchema);
