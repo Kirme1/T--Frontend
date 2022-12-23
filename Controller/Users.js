@@ -155,7 +155,7 @@ router.post('/api/users', function(req, res, next){
   
   // This method creates an neww booking for a specific user. It first finds the use with a specific id 
   // and then save the new booking for that user.
-  router.post("/api/users/:id/bookings", function (req, res, next) {
+  router.post('/api/users/:id/bookings', function (req, res, next) {
     User.findById(req.params.id, function (err, user) {
       if (err) {
         return res.status(500);

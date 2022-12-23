@@ -17,7 +17,7 @@ client.on("connect", e => {
             console.log('aaoo got something')
             if (m.length !== 0){
                 try {
-                    //console.log(m.toString())
+                    console.log(JSON.parse(m.toString()))
                     let message = JSON.parse(m.toString())
                     console.log(message.request)
                     if (message.request === 'post') {
@@ -27,9 +27,9 @@ client.on("connect", e => {
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
                     } else if (message.request === 'get') {
-                       // getAllC(message.url, message.data.Authorization).then(data => {
-                        var getPromise = getCommand.execute(message.url, message.data.Authorization)
-                        getPromise.then(data => {
+                       getAllC(message.url, message.data.Authorization).then(data => {
+                        //var getPromise = getCommand.execute(message.url)
+                        //getPromise.then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             console.log(response)
                             return client.publish(topic, JSON.stringify(response), {qos:1})
@@ -237,17 +237,7 @@ async function book(url, data) {
     return res
 }
 
-/*var getCommand = CommandsFactory.getOrCreate("Service on port :" + service.port + ":" + port) //Same as above, but for the getRequest function
-    .circuitBreakerErrorThresholdPercentage(service.errorThreshold)
-    .timeout(service.timeout)
-    .run(getRequest)
-    .circuitBreakerRequestVolumeThreshold(service.concurrency)
-    .circuitBreakerSleepWindowInMilliseconds(service.timeout)
-    .statisticalWindowLength(10000)
-    .statisticalWindowNumberOfBuckets(10)
-    .errorHandler(isErrorHandler)
-    .build();
-    */
+/*
     var getCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
     .circuitBreakerErrorThresholdPercentage(10)
     .timeout(700)
@@ -258,38 +248,22 @@ async function book(url, data) {
     .statisticalWindowNumberOfBuckets(10)
     .errorHandler(false)
     .build();
+    */
 
 
-async function getRequest(url, Autho) {
-    let data = {}
-    if(Autho != undefined){
-        await Api.get(url, {headers: {Authorization: 'Bearer ' + Autho}}).then(response => {
-            data = response.data
-        }).catch(e => {
-            data = { "error": e.response.status + " " + e.response.statusText }
-        })
-        return data
-    } else {
-        await Api.get(url).then(response => {
-            data = response.data
-        }).catch(e => {
-            data = { "error": e.response.status + " " + e.response.statusText }
-        })
-        return data
-    }
+async function getRequest(url) {
+    console.log('here2')
+    let res = {}
+    await Api.get(url).then(response => {
+        console.log({ 'the response': response.data })
+        res = response.data
+    }).catch(e => {
+        res = { "error": e}
+    })
+    console.log(res)
+    return res
 }
 
-/*var postCommand = CommandsFactory.getOrCreate("Service on port :" + service.port + ":" + port) //Same as above, but for the postRequest function
-    .circuitBreakerErrorThresholdPercentage(service.errorThreshold)
-    .timeout(service.timeout)
-    .run(postRequest)
-    .circuitBreakerRequestVolumeThreshold(service.concurrency)
-    .circuitBreakerSleepWindowInMilliseconds(service.timeout)
-    .statisticalWindowLength(10000)
-    .statisticalWindowNumberOfBuckets(10)
-    .errorHandler(isErrorHandler)
-    .build();
-    */
     var postCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
     .circuitBreakerErrorThresholdPercentage(10)
     .timeout(700)
@@ -300,6 +274,7 @@ async function getRequest(url, Autho) {
     .statisticalWindowNumberOfBuckets(10)
     .errorHandler(false)
     .build();
+    
 
 async function postRequest(url, data, Autho) {
     let res = {}
