@@ -4,9 +4,12 @@ const client = mqtt.connect("mqtt://localhost:1883/")
 const Api = axios.create({
     baseURL: process.env.VUE_APP_API_ENDPOINT || 'http://localhost:8000/api'
 })
+var CommandsFactory = require('hystrixjs').commandFactory;
+
 // All the requests sent from the client, after being authenticated come here
 // Interpreter checks what is the type of request (like if it is a get, post, book, etc)
 // Then based on the type, the request is handeld via one the async functions below.
+
 client.on("connect", e => {
     console.log("connected")
     client.subscribe("/dentistimo/authenticated/#", {qos:1},e => {
@@ -18,12 +21,15 @@ client.on("connect", e => {
                     let message = JSON.parse(m.toString())
                     console.log(message.request)
                     if (message.request === 'post') {
-                        postRequest(message.url, message.data, message.data.Authorization).then(data => {
+                        var postPromise = postCommand.execute(message.url, message.data, message.data.Authorization) //Execute the command, creating a promise
+                        postPromise.then(data => { //Once the promise is fulfilled, execute the rest of the code
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
                     } else if (message.request === 'get') {
-                        getAllC(message.url, message.data.Authorization).then(data => {
+                       // getAllC(message.url, message.data.Authorization).then(data => {
+                        var getPromise = getCommand.execute(message.url, message.data.Authorization)
+                        getPromise.then(data => {
                             let response = { "id": message.id, "response": "response", "data": data }
                             console.log(response)
                             return client.publish(topic, JSON.stringify(response), {qos:1})
@@ -31,7 +37,9 @@ client.on("connect", e => {
                     } else if (message.request === 'book') {
                         console.log('here')
                         console.log(message.data)
-                        book(message.url, message.data).then(data => {
+                       // book(message.url, message.data).then(data => {
+                        var bookPromise = bookCommand.execute(message.url, message.data) //Execute the command, creating a promise
+                        bookPromise.then(data => { //Once the promise is fulfilled, execute the rest of the code
                             let response = { "id": message.id, "response": "response", "data": data }
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         })
@@ -204,6 +212,18 @@ async function deleteAll(url) {
     return res
 }
 // This function uses the post function in the booking controller to create a booking.
+
+var bookCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
+    .circuitBreakerErrorThresholdPercentage(10)
+    .timeout(700)
+    .run(book) //The command calls the book function when executed, creating a promise
+    .circuitBreakerRequestVolumeThreshold(10)
+    .circuitBreakerSleepWindowInMilliseconds(700)
+    .statisticalWindowLength(10000)
+    .statisticalWindowNumberOfBuckets(10)
+    .errorHandler(false)
+    .build();
+
 async function book(url, data) {
     console.log(data)
     let res = {}
@@ -216,6 +236,29 @@ async function book(url, data) {
     console.log(res)
     return res
 }
+
+/*var getCommand = CommandsFactory.getOrCreate("Service on port :" + service.port + ":" + port) //Same as above, but for the getRequest function
+    .circuitBreakerErrorThresholdPercentage(service.errorThreshold)
+    .timeout(service.timeout)
+    .run(getRequest)
+    .circuitBreakerRequestVolumeThreshold(service.concurrency)
+    .circuitBreakerSleepWindowInMilliseconds(service.timeout)
+    .statisticalWindowLength(10000)
+    .statisticalWindowNumberOfBuckets(10)
+    .errorHandler(isErrorHandler)
+    .build();
+    */
+    var getCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
+    .circuitBreakerErrorThresholdPercentage(10)
+    .timeout(700)
+    .run(getRequest) //The command calls the book function when executed, creating a promise
+    .circuitBreakerRequestVolumeThreshold(6)
+    .circuitBreakerSleepWindowInMilliseconds(700)
+    .statisticalWindowLength(10000)
+    .statisticalWindowNumberOfBuckets(10)
+    .errorHandler(false)
+    .build();
+
 
 async function getRequest(url, Autho) {
     let data = {}
@@ -235,6 +278,28 @@ async function getRequest(url, Autho) {
         return data
     }
 }
+
+/*var postCommand = CommandsFactory.getOrCreate("Service on port :" + service.port + ":" + port) //Same as above, but for the postRequest function
+    .circuitBreakerErrorThresholdPercentage(service.errorThreshold)
+    .timeout(service.timeout)
+    .run(postRequest)
+    .circuitBreakerRequestVolumeThreshold(service.concurrency)
+    .circuitBreakerSleepWindowInMilliseconds(service.timeout)
+    .statisticalWindowLength(10000)
+    .statisticalWindowNumberOfBuckets(10)
+    .errorHandler(isErrorHandler)
+    .build();
+    */
+    var postCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
+    .circuitBreakerErrorThresholdPercentage(10)
+    .timeout(700)
+    .run(postRequest) //The command calls the book function when executed, creating a promise
+    .circuitBreakerRequestVolumeThreshold(6)
+    .circuitBreakerSleepWindowInMilliseconds(700)
+    .statisticalWindowLength(10000)
+    .statisticalWindowNumberOfBuckets(10)
+    .errorHandler(false)
+    .build();
 
 async function postRequest(url, data, Autho) {
     let res = {}
