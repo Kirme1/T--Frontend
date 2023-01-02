@@ -1,25 +1,35 @@
-const axios = require("axios")
+const axios = require("axios");
+const { response } = require("express");
 const mqtt = require("mqtt")
 const client = mqtt.connect("mqtt://localhost:1883/")
 const Api = axios.create({
     baseURL: process.env.VUE_APP_API_ENDPOINT || 'http://localhost:8000/api'
 })
-var CommandsFactory = require('hystrixjs').commandFactory;
+const CircuitBreaker = require("opossum");
+
+const options = {
+    timeout: 10000, //If function takes longer than 10 sec, trigger a failure
+    errorHandlingPercentage: 10, //If 10% of requests fail, trigger circuit
+    resetTimeout: 30000, //After 30 seconds try again
+  };
 
 // All the requests sent from the client, after being authenticated come here
 // Interpreter checks what is the type of request (like if it is a get, post, book, etc)
 // Then based on the type, the request is handeld via one the async functions below.
 
+let breakerstate;
+let breaker;
+
 client.on("connect", e => {
     console.log("connected")
     client.subscribe("/dentistimo/authenticated/#", {qos:1},e => {
         client.on("message", (topic, m, option) => {
-            console.log('aaoo got something')
+            console.log('got something')
             if (m.length !== 0){
                 try {
-                    console.log(JSON.parse(m.toString()))
+                    //console.log(JSON.parse(m.toString()))
                     let message = JSON.parse(m.toString())
-                    console.log(message.request)
+                    //console.log(message.request)
                     if (message.request === 'post') {
                         var postPromise = postCommand.execute(message.url, message.data, message.data.Authorization) //Execute the command, creating a promise
                         postPromise.then(data => { //Once the promise is fulfilled, execute the rest of the code
@@ -38,11 +48,42 @@ client.on("connect", e => {
                         console.log('here')
                         console.log(message.data)
                        // book(message.url, message.data).then(data => {
-                        var bookPromise = bookCommand.execute(message.url, message.data) //Execute the command, creating a promise
-                        bookPromise.then(data => { //Once the promise is fulfilled, execute the rest of the code
-                            let response = { "id": message.id, "response": "response", "data": data }
-                            return client.publish(topic, JSON.stringify(response), {qos:1})
-                        })
+                        //var bookPromise = bookCommand.execute(message.url, message.data) //Execute the command, creating a promise
+                        breaker = new CircuitBreaker(book(message.url, message.data), options);
+
+
+                    
+                        breaker.fallback(() => "Sorry, out of service right now");
+      breaker.on("open", () => { 
+        if(breakerstate != "opened"){
+          console.log("Circuitbreaker opened");
+          breakerstate = "opened"
+        }
+      })
+      breaker.on("halfOpen", () => { 
+        if(breakerstate != "halfOpen"){
+          console.log("Circuitbreaker halfOpen");
+          breakerstate = "halfOpen"
+        }
+      });
+      /*The opossum librarys eventlistener for the "Closed" state does not work.
+        We decided to work with the "Success" listener and force close it. */
+      breaker.on("success", () => {
+        if(breakerstate != "closed"){
+          breaker.close();
+          console.log("Circuitbreaker closed");
+          breakerstate = "closed";
+        }
+        }
+      );
+
+      breaker.fire().then(data => { //Once the promise is fulfilled, execute the rest of the code
+        let response = { "id": message.id, "response": "response", "data": data }
+        return client.publish(topic, JSON.stringify(response), {qos:1})
+    })
+    
+
+                        
                     } else if (message.request === 'deleteAll') {
                         console.log('here')
                         deleteAll(message.url).then(data => {
@@ -70,11 +111,57 @@ client.on("connect", e => {
                             return client.publish(topic, JSON.stringify(response), {qos:1})
                         }) } 
                         else if (message.request === 'postBookingForUser') {
+                            
+                            if(breakerstate !== "opened") {
+                       // book(message.url, message.data).then(data => {
+                        //var bookPromise = bookCommand.execute(message.url, message.data) //Execute the command, creating a promise
+                        breaker = new CircuitBreaker(book(message.url, message.data), options);
+
+
+                    
+                        breaker.fallback(() => "Sorry, out of service right now");
+      breaker.on("open", () => { 
+        if(breakerstate != "opened"){
+          console.log("Circuitbreaker opened");
+          breakerstate = "opened"
+        }
+      })
+      breaker.on("halfOpen", () => { 
+        if(breakerstate != "halfOpen"){
+          console.log("Circuitbreaker halfOpen");
+          breakerstate = "halfOpen"
+        }
+      });
+      /*The opossum librarys eventlistener for the "Closed" state does not work.
+        We decided to work with the "Success" listener and force close it. */
+      breaker.on("success", () => {
+        if(breakerstate != "closed"){
+          breaker.close();
+          console.log("Circuitbreaker closed");
+          breakerstate = "closed";
+        }
+        }
+      );
+
+      breaker.fire().then(data => { //Once the promise is fulfilled, execute the rest of the code
+        let response = { "id": message.id, "response": "response", "data": data }
+        return client.publish(topic, JSON.stringify(response), {qos:1})
+    })
+} else if(breakerstate === "opened") {
+    console.log('out of service')
+    data = {'message': 'Sorry, out of service right now'}
+    let response = { "id": message.id, "response": "response", "data": data }
+        return client.publish(topic, JSON.stringify(response), {qos:1})
+}
+
+                            /*
                             console.log('here')
                             postBookingForUser(message.url, message.data).then(data => {
                                 let response = { "id": message.id, "response": "response", "data": data }
                                 return client.publish(topic, JSON.stringify(response), {qos:1})
-                            }) }
+                            }) 
+                            */
+                        }
                         else if (message.request === 'postU') {
                             console.log('here')
                             postU(message.url, message.data).then(data => {
@@ -119,7 +206,7 @@ client.on("connect", e => {
 
                     }
                     
-                    console.log(option)
+                    //console.log(option)
                 } catch (e) {
                     let response = { "id": topic.split('/').pop(), "response": "response", "data": "400 Bad Requests" }
                     return client.publish(topic, JSON.stringify(response), {qos:1})
@@ -158,16 +245,13 @@ async function postC(url, data) {
 // This method handles the request for post a new booking for a specfic user
 // It then sends the request to the related endpoint in the booking controller
 async function postBookingForUser(url, data) {
-    console.log('here2')
+    
     let res = {}
-    console.log(url, data)
     await Api.post(url, data).then(response => {
-        console.log({ 'the response': response.data })
-        res = response.data
+        res = { 'data': response.data, 'status': response.status}
     }).catch(e => {
         res = { "error": e}
     })
-    console.log(res)
       return res
 }
 // This method handels the request for retrieving all the bookings.
@@ -213,18 +297,26 @@ async function deleteAll(url) {
 }
 // This function uses the post function in the booking controller to create a booking.
 
-var bookCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
-    .circuitBreakerErrorThresholdPercentage(10)
-    .timeout(700)
-    .run(book) //The command calls the book function when executed, creating a promise
-    .circuitBreakerRequestVolumeThreshold(10)
-    .circuitBreakerSleepWindowInMilliseconds(700)
-    .statisticalWindowLength(10000)
-    .statisticalWindowNumberOfBuckets(10)
-    .errorHandler(false)
-    .build();
 
 async function book(url, data) {
+
+    return new Promise((resolve, reject) => {
+        
+    postBookingForUser(url, data).then(result => {
+        if(result.status === 201) {
+            resolve(result.data);
+            return;
+          }
+          reject(result.data);
+
+    })
+    
+    
+    })
+        
+}
+
+async function book1(url, data) {
     console.log(data)
     let res = {}
     await Api.post(url, data).then(response => {
@@ -236,6 +328,7 @@ async function book(url, data) {
     console.log(res)
     return res
 }
+
 
    /*
     var getCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a get command with default settings
@@ -264,17 +357,7 @@ async function getRequest(url) {
     return res
 }
 
-    var postCommand = CommandsFactory.getOrCreate("Service on port :" + 3001) //Create a book command with default settings
-    .circuitBreakerErrorThresholdPercentage(10)
-    .timeout(700)
-    .run(postRequest) //The command calls the book function when executed, creating a promise
-    .circuitBreakerRequestVolumeThreshold(6)
-    .circuitBreakerSleepWindowInMilliseconds(700)
-    .statisticalWindowLength(10000)
-    .statisticalWindowNumberOfBuckets(10)
-    .errorHandler(false)
-    .build();
-    
+
 
 async function postRequest(url, data, Autho) {
     let res = {}
